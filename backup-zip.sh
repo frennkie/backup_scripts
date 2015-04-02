@@ -47,7 +47,7 @@ PASSPHRASE_FILE_FULL_PATH=${SCRIPTPATH}/${PASSPHRASE_FILENAME}
 
 ## check that file exists
 if [[ ! -f ${PASSPHRASE_FILE_FULL_PATH} ]]; then
-    echo -e "\e[31mPassphrase file does not exist! Exiting.\e[0m"
+    echo -e "\e[31mPassphrase file \"${PASSPHRASE_FILE_FULL_PATH}\" does not exist! Exiting.\e[0m"
     exit 1;
 else
     ## check ownership
