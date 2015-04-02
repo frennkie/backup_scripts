@@ -9,7 +9,10 @@
 ## Debuging
 set -x
 
-## only filename.. file is expected to be located in same directory as backup-[un]zip.sh script
+## Put the passphrase for the symmetric gpg encryption into this file
+## file is expected to be located in same directory as backup-[un]zip.sh script
+## file needs to owned by same user (I think root) and needs permissions "600"
+## passphrase goes into first line (no other content)
 PASSPHRASE_FILENAME="backup-passphrase.txt"
 
 
