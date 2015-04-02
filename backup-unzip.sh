@@ -16,6 +16,7 @@
 PASSPHRASE_FILENAME="backup-passphrase.txt"
 
 
+## setup basics
 TAR="/bin/tar"
 GPG="/usr/bin/gpg"
 SED="/bin/sed"
