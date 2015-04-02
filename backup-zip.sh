@@ -4,14 +4,16 @@
 # Description:	Take given folder and create an encrypted tar archive
 #
 # Author:	mail@rhab.de
-# Version:	0.5
+# Version:	0.6
 
-#set -x
+## Debuging
+set -x
+
+## only filename.. file is expected to be located in same directory as backup-[un]zip.sh script
+PASSPHRASE_FILENAME="backup-passphrase.txt"
 
 
-PASSPHRASE="geheim"
-
-
+## setup basics
 TAR="/bin/tar"
 GPG="/usr/bin/gpg"
 SED="/bin/sed"
@@ -36,12 +38,48 @@ endTimer() {
 
 startTimer
 
+## setup full patch for passphrase file and check it
+SCRIPTPATH=$(dirname $0)
+PASSPHRASE_FILE_FULL_PATH=${SCRIPTPATH}/${PASSPHRASE_FILENAME}
+
+## check that file exists
+if [[ ! -f ${PASSPHRASE_FILE_FULL_PATH} ]]; then
+    echo -e "\e[31mPassphrase file does not exist! Exiting.\e[0m"
+    exit 1;
+else 
+    echo -e "\e[32mPassphrase file found.\e[0m"
+    ## check ownership
+    if [[ ! -O ${PASSPHRASE_FILE_FULL_PATH} ]]; then
+        echo -e "\e[31mPassphrase file is not owned by me (should be root?!). Exiting.\e[0m"
+        exit 1;	
+    else
+	echo -e "\e[32mPassphrase file is owned by me (should be root?!).\e[0m"
+        ## check strict permissions (600)
+	if [ $(stat -c %a ${PASSPHRASE_FILE_FULL_PATH}) != 600 ]; then
+	    echo -e "\e[31mPassphrase file has wrong file permissions. Please set to 600. Exiting.\e[0m"
+	    exit 1;
+	else
+	    echo -e "\e[32mPassphrase file has the right file permissions (600).\e[0m"
+            ## check that file has exactly one line
+	    if [ $(cat ${PASSPHRASE_FILE_FULL_PATH} | wc -l) != 1 ]; then
+	        echo -e "\e[31mPassphrase file does not contain exactly one single line. Exiting.\e[0m"
+	    else
+		echo -e "\e[32mPassphrase file has exactly one line (as required).\e[0m"
+  	    fi # // lines
+	fi # // permissions
+    fi # // ownership
+fi # // exists
+
+
+echo -e "\e[32mPassphrase file looks ok.\e[0m"
+exit 0;
+
 # make sure there is no trailing / 
 VM_DIR=$(echo "$1" | ${SED} 's#/*$##')
 
 echo "${VM_DIR}"
 
-${TAR} c -v -S -C "${VM_DIR}" . | ${GPG} -c --passphrase "${PASSPHRASE}" --cipher-algo aes256 --compress-algo zlib --no-use-agent --batch --no-tty --yes -o "${VM_DIR}".gpg
+${TAR} c -v -S -C "${VM_DIR}" . | ${GPG} -c --passphrase-file "${PASSPHRASE_FILE_FULL_PATH}" --cipher-algo aes256 --compress-algo zlib --no-use-agent --batch --no-tty --yes -o "${VM_DIR}".gpg
 
 if [[ $? == 0 ]]; then
     # Return 0 -> so everything was ok
