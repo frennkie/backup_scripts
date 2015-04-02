@@ -1,18 +1,18 @@
 #!/bin/bash
 #
-# Name:         backup-unzip.sh
-# Description:  Take given gpg file decrypt and extract tar archive
+# Name:            backup-unzip.sh
+# Description:     Take given gpg file decrypt and extract tar archive
 #
-# Author:       mail@rhab.de
-# Version:      0.7
+# Author:          mail@rhab.de
+# Version:         0.8
 
 ## Debuging
 #set -x
 
 ## Put the passphrase for the symmetric gpg encryption into this file
-## file is expected to be located in same directory as backup-[un]zip.sh script
-## file needs to owned by same user (I think root) and needs permissions "600"
-## passphrase goes into first line (no other content)
+## File is expected to be located in same directory as backup-[un]zip.sh script
+## File needs to be owned by same user and needs permissions "600"
+## Passphrase goes into first line (no other content)
 PASSPHRASE_FILENAME="backup-passphrase.txt"
 
 
@@ -51,7 +51,7 @@ if [[ ! -f ${PASSPHRASE_FILE_FULL_PATH} ]]; then
 else
     ## check ownership
     if [[ ! -O ${PASSPHRASE_FILE_FULL_PATH} ]]; then
-        echo -e "\e[31mPassphrase file is not owned by me (should be root?!). Exiting.\e[0m"
+        echo -e "\e[31mPassphrase file is not owned by this user. Exiting.\e[0m"
         exit 1;
     else
         ## check strict permissions (600)
@@ -85,7 +85,7 @@ if [[ $? == 0 ]]; then
 else
     echo -e "\e[31mFailed!\e[0m"
     echo -e "\e[31mPlease check messages above. Most commenly: Wrong Passphrase or Disc Full.\e[0m"
-fi 
+fi
 
 echo -e "Extracted: \e[33m$(du -sh "${VM_DIR}")\e[0m"
 

@@ -1,18 +1,18 @@
 #!/bin/bash
 #
-# Name:	 	backup-zip.sh
-# Description:	Take given folder ($1) and create an encrypted tar archive
+# Name:            backup-zip.sh
+# Description:     Take given folder ($1) and create an encrypted tar archive
 #
-# Author:	mail@rhab.de
-# Version:	0.7
+# Author:          mail@rhab.de
+# Version:         0.8
 
 ## Debuging
 #set -x
 
 ## Put the passphrase for the symmetric gpg encryption into this file
-## file is expected to be located in same directory as backup-[un]zip.sh script
-## file needs to owned by same user (I think root) and needs permissions "600"
-## passphrase goes into first line (no other content)
+## File is expected to be located in same directory as backup-[un]zip.sh script
+## File needs to be owned by same user and needs permissions "600"
+## Passphrase goes into first line (no other content)
 PASSPHRASE_FILENAME="backup-passphrase.txt"
 
 
@@ -49,11 +49,11 @@ PASSPHRASE_FILE_FULL_PATH=${SCRIPTPATH}/${PASSPHRASE_FILENAME}
 if [[ ! -f ${PASSPHRASE_FILE_FULL_PATH} ]]; then
     echo -e "\e[31mPassphrase file does not exist! Exiting.\e[0m"
     exit 1;
-else 
+else
     ## check ownership
     if [[ ! -O ${PASSPHRASE_FILE_FULL_PATH} ]]; then
-        echo -e "\e[31mPassphrase file is not owned by me (should be root?!). Exiting.\e[0m"
-        exit 1;	
+        echo -e "\e[31mPassphrase file is not owned by this user. Exiting.\e[0m"
+        exit 1;
     else
         ## check strict permissions (600)
 	if [ $(stat -c %a ${PASSPHRASE_FILE_FULL_PATH}) != 600 ]; then
@@ -70,7 +70,7 @@ fi # // exists
 
 echo -e "\e[32mPassphrase file looks ok: ${PASSPHRASE_FILE_FULL_PATH}\e[0m"
 
-# make sure there is no trailing / 
+# make sure there is no trailing /
 VM_DIR=$(echo "$1" | ${SED} 's#/*$##')
 
 echo "${VM_DIR}"
