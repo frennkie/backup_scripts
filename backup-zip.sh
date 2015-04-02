@@ -68,7 +68,6 @@ else
     fi # // ownership
 fi # // exists
 
-
 echo -e "\e[32mPassphrase file looks ok.\e[0m"
 
 # make sure there is no trailing / 
