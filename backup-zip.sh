@@ -4,10 +4,10 @@
 # Description:	Take given folder ($1) and create an encrypted tar archive
 #
 # Author:	mail@rhab.de
-# Version:	0.6
+# Version:	0.7
 
 ## Debuging
-set -x
+#set -x
 
 ## Put the passphrase for the symmetric gpg encryption into this file
 ## file is expected to be located in same directory as backup-[un]zip.sh script
@@ -68,7 +68,7 @@ else
     fi # // ownership
 fi # // exists
 
-echo -e "\e[32mPassphrase file looks ok.\e[0m"
+echo -e "\e[32mPassphrase file looks ok: ${PASSPHRASE_FILE_FULL_PATH}\e[0m"
 
 # make sure there is no trailing / 
 VM_DIR=$(echo "$1" | ${SED} 's#/*$##')
