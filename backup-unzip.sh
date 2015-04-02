@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 # Name:            backup-unzip.sh
-# Description:     Take given gpg file decrypt and extract tar archive
+# Description:     Take given gpg file ($1) decrypt and extract tar archive
 #
 # Author:          mail@rhab.de
-# Version:         0.10
+# Version:         0.11
 
 ## Debuging
 #set -x
