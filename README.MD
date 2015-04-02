@@ -1,4 +1,4 @@
-Backups scripts that might be useful.
+Backup scripts that might be useful.
 
 backup-zip.sh   - takes an existing folder creates an encrypted and compressed archive
 
