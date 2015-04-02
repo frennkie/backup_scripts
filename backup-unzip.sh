@@ -4,7 +4,7 @@
 # Description:     Take given gpg file decrypt and extract tar archive
 #
 # Author:          mail@rhab.de
-# Version:         0.8
+# Version:         0.10
 
 ## Debuging
 #set -x
