@@ -78,7 +78,7 @@ VM_DIR=$(echo "$1" | ${SED} 's#.gpg$##')
 
 mkdir "${VM_DIR}"
 
-${GPG} -d --passphrase-file "${PASSPHRASE_FILE_FULL_PATH}" --no-use-agent "${VM_TAR_FILE}" | ${TAR} x -v -S -C "${VM_DIR}"
+${GPG} -d --passphrase-file "${PASSPHRASE_FILE_FULL_PATH}" --no-tty --no-use-agent "${VM_TAR_FILE}" | ${TAR} x -v -S -C "${VM_DIR}"
 
 if [[ $? == 0 ]]; then
     # Return 0 -> so everything was ok
