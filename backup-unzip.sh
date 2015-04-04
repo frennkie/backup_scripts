@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Name:            backup-unzip.sh
 # Description:     Take given gpg file ($1) decrypt and extract tar archive
 #
 # Author:          mail@rhab.de
-# Version:         0.11
+# Version:         0.12
 
 ## Debuging
 #set -x
@@ -32,7 +32,7 @@ endTimer() {
     DURATION=$(echo $((E_TIME - S_TIME)))
 
     #calculate overall completion time
-    if [[ ${DURATION} -le 60 ]] ; then
+    if [ ${DURATION} -le 60 ] ; then
         echo "Ended: "${END_TIME}" - Duration: ${DURATION} Seconds"
     else
         echo "Ended: "${END_TIME}" - Duration: $(awk 'BEGIN{ printf "%.2f\n", '${DURATION}'/60}') Minutes"
@@ -46,49 +46,53 @@ SCRIPTPATH=$(dirname $0)
 PASSPHRASE_FILE_FULL_PATH=${SCRIPTPATH}/${PASSPHRASE_FILENAME}
 
 ## check that file exists
-if [[ ! -f ${PASSPHRASE_FILE_FULL_PATH} ]]; then
-    echo -e "\e[31mPassphrase file \"${PASSPHRASE_FILE_FULL_PATH}\" does not exist! Exiting.\e[0m"
+if [ ! -f ${PASSPHRASE_FILE_FULL_PATH} ]; then
+    printf "\033[1;31mPassphrase file \"${PASSPHRASE_FILE_FULL_PATH}\" does not exist! Exiting.\033[0m\n"
     exit 1;
 else
     ## check ownership
-    if [[ ! -O ${PASSPHRASE_FILE_FULL_PATH} ]]; then
-        echo -e "\e[31mPassphrase file is not owned by this user. Exiting.\e[0m"
+    if [ ! -O ${PASSPHRASE_FILE_FULL_PATH} ]; then
+        printf "\033[1;31mPassphrase file is not owned by this user. Exiting.\033[0m\n"
         exit 1;
     else
         ## check strict permissions (600)
         if [ $(stat -c %a ${PASSPHRASE_FILE_FULL_PATH}) != 600 ]; then
-            echo -e "\e[31mPassphrase file has wrong file permissions. Please set to 600. Exiting.\e[0m"
+            printf "\033[1;31mPassphrase file has wrong file permissions. Please set to 600. Exiting.\033[0m\n"
             exit 1;
         else
             ## check that file has exactly one line
             if [ $(cat ${PASSPHRASE_FILE_FULL_PATH} | wc -l) != 1 ]; then
-                echo -e "\e[31mPassphrase file does not contain exactly one single line. Exiting.\e[0m"
+                printf "\033[1;31mPassphrase file does not contain exactly one single line. Exiting.\033[0m\n"
             fi # // lines
         fi # // permissions
     fi # // ownership
 fi # // exists
 
 
-echo -e "\e[32mPassphrase file looks ok: ${PASSPHRASE_FILE_FULL_PATH}\e[0m"
+printf "\033[1;32mPassphrase file looks ok: ${PASSPHRASE_FILE_FULL_PATH}\033[0m\n"
 
 
-# remove a leading / if there is one
+# remove .gpg suffix
 VM_TAR_FILE="$1"
-VM_DIR=$(echo "$1" | ${SED} 's#.gpg$##')
+VM_DIR=${1%.gpg}
 
+if [ -d ${VM_DIR} ]; then
+    printf "\033[1;31mError! Target directory already exists: ${VM_DIR}\033[0m\n"
+    exit 1
+fi
 mkdir "${VM_DIR}"
 
 ${GPG} -d --passphrase-file "${PASSPHRASE_FILE_FULL_PATH}" --no-tty --no-use-agent "${VM_TAR_FILE}" | ${TAR} x -v -S -C "${VM_DIR}"
 
-if [[ $? == 0 ]]; then
+if [ $? = 0 ]; then
     # Return 0 -> so everything was ok
-    echo -e "\e[32mSuccess\e[0m"
+    printf "\033[1;32mSuccess\033[0m\n"
 else
-    echo -e "\e[31mFailed!\e[0m"
-    echo -e "\e[31mPlease check messages above. Most commenly: Wrong Passphrase or Disc Full.\e[0m"
+    printf "\033[1;31mFailed!\033[0m\n"
+    printf "\033[1;31mPlease check messages above. Most commenly: Wrong Passphrase or Disc Full.\033[0m\n"
 fi
 
-echo -e "Extracted: \e[33m$(du -sh "${VM_DIR}")\e[0m"
+printf "Extracted: \033[1;33m$(du -sh "${VM_DIR}")\033[0m\n"
 
 endTimer
 #EOF
