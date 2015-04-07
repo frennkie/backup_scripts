@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Name:            backup-zip.sh
 # Description:     Take given folder ($1) and create an encrypted tar archive
 #
 # Author:          mail@rhab.de
-# Version:         0.10
+# Version:         0.11
 
 ## Debuging
 #set -x
@@ -70,15 +70,14 @@ fi # // exists
 
 printf "\033[1;32mPassphrase file looks ok: ${PASSPHRASE_FILE_FULL_PATH}\033[0m\n"
 
-# make sure there is no trailing /
-#VM_DIR=$(echo "$1" | ${SED} 's#/*$##')
-VM_DIR=$(echo "$1" | ${SED} 's#/*$##')
+# remove exactly one trailing / (if there is one)
+VM_DIR=${1%/}
 
 printf "${VM_DIR}"
 
 ${TAR} c -v -S -C "${VM_DIR}" . | ${GPG} -c --passphrase-file "${PASSPHRASE_FILE_FULL_PATH}" --cipher-algo aes256 --compress-algo zlib --no-use-agent --batch --no-tty --yes -o "${VM_DIR}".gpg
 
-if [ $? == 0 ]; then
+if [ $? = 0 ]; then
     # Return 0 -> so everything was ok
     printf "\033[1;32mSuccess\033[0m\n"
 else
