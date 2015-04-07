@@ -73,7 +73,7 @@ printf "\033[1;32mPassphrase file looks ok: ${PASSPHRASE_FILE_FULL_PATH}\033[0m\
 # remove exactly one trailing / (if there is one)
 VM_DIR=${1%/}
 
-printf "${VM_DIR}"
+printf "Packing up: %s to %s.gpg\n" "${VM_DIR}" "${VM_DIR}"
 
 ${TAR} c -v -S -C "${VM_DIR}" . | ${GPG} -c --passphrase-file "${PASSPHRASE_FILE_FULL_PATH}" --cipher-algo aes256 --compress-algo zlib --no-use-agent --batch --no-tty --yes -o "${VM_DIR}".gpg
 
