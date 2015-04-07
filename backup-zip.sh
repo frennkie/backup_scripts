@@ -41,7 +41,7 @@ endTimer() {
 
 startTimer
 
-## setup full patch for passphrase file and check it
+## setup full path for passphrase file and check it
 SCRIPTPATH=$(dirname $0)
 PASSPHRASE_FILE_FULL_PATH=${SCRIPTPATH}/${PASSPHRASE_FILENAME}
 
