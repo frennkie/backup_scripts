@@ -32,7 +32,7 @@ endTimer() {
     DURATION=$(echo $((E_TIME - S_TIME)))
 
     #calculate overall completion time
-    if [[ ${DURATION} -le 60 ]] ; then
+    if [ ${DURATION} -le 60 ] ; then
         echo "Ended: "${END_TIME}" - Duration: ${DURATION} Seconds"
     else
         echo "Ended: "${END_TIME}" - Duration: $(awk 'BEGIN{ printf "%.2f\n", '${DURATION}'/60}') Minutes"
@@ -46,45 +46,46 @@ SCRIPTPATH=$(dirname $0)
 PASSPHRASE_FILE_FULL_PATH=${SCRIPTPATH}/${PASSPHRASE_FILENAME}
 
 ## check that file exists
-if [[ ! -f ${PASSPHRASE_FILE_FULL_PATH} ]]; then
-    echo -e "\e[31mPassphrase file \"${PASSPHRASE_FILE_FULL_PATH}\" does not exist! Exiting.\e[0m"
+if [ ! -f ${PASSPHRASE_FILE_FULL_PATH} ]; then
+    printf "\033[1;31mPassphrase file \"${PASSPHRASE_FILE_FULL_PATH}\" does not exist! Exiting.\033[0m\n"
     exit 1;
 else
     ## check ownership
-    if [[ ! -O ${PASSPHRASE_FILE_FULL_PATH} ]]; then
-        echo -e "\e[31mPassphrase file is not owned by this user. Exiting.\e[0m"
+    if [ ! -O ${PASSPHRASE_FILE_FULL_PATH} ]; then
+        printf "\033[1;31mPassphrase file is not owned by this user. Exiting.\033[0m\n"
         exit 1;
     else
         ## check strict permissions (600)
 	if [ $(stat -c %a ${PASSPHRASE_FILE_FULL_PATH}) != 600 ]; then
-	    echo -e "\e[31mPassphrase file has wrong file permissions. Please set to 600. Exiting.\e[0m"
+	    printf "\033[1;31mPassphrase file has wrong file permissions. Please set to 600. Exiting.\033[0m\n"
 	    exit 1;
 	else
             ## check that file has exactly one line
 	    if [ $(cat ${PASSPHRASE_FILE_FULL_PATH} | wc -l) != 1 ]; then
-	        echo -e "\e[31mPassphrase file does not contain exactly one single line. Exiting.\e[0m"
+	        printf "\033[1;31mPassphrase file does not contain exactly one single line. Exiting.\033[0m\n"
   	    fi # // lines
 	fi # // permissions
     fi # // ownership
 fi # // exists
 
-echo -e "\e[32mPassphrase file looks ok: ${PASSPHRASE_FILE_FULL_PATH}\e[0m"
+printf "\033[1;32mPassphrase file looks ok: ${PASSPHRASE_FILE_FULL_PATH}\033[0m\n"
 
 # make sure there is no trailing /
+#VM_DIR=$(echo "$1" | ${SED} 's#/*$##')
 VM_DIR=$(echo "$1" | ${SED} 's#/*$##')
 
-echo "${VM_DIR}"
+printf "${VM_DIR}"
 
 ${TAR} c -v -S -C "${VM_DIR}" . | ${GPG} -c --passphrase-file "${PASSPHRASE_FILE_FULL_PATH}" --cipher-algo aes256 --compress-algo zlib --no-use-agent --batch --no-tty --yes -o "${VM_DIR}".gpg
 
-if [[ $? == 0 ]]; then
+if [ $? == 0 ]; then
     # Return 0 -> so everything was ok
-    echo -e "\e[32mSuccess\e[0m"
+    printf "\033[1;32mSuccess\033[0m\n"
 else
-    echo -e "\e[31mFailed\e[0m"
+    printf "\033[1;31mFailed\033[0m\n"
 fi
 
-echo -e "Resulting File: \e[33m$(ls -sh "${VM_DIR}".gpg)\e[0m"
+printf "Resulting File: \033[1;33m$(ls -sh "${VM_DIR}".gpg)\033[0m\n"
 
 endTimer
 #EOF
